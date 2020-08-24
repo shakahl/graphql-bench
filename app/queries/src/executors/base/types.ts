@@ -41,6 +41,7 @@ export interface GlobalConfig {
    * })
    */
   writeStream?: stream.Writable
+  git?:GitConfig
 }
 
 export enum BenchmarkTool {
@@ -170,4 +171,13 @@ export interface BenchmarkMetricParams {
     totalBytes: number
     bytesPerSecond: number
   }
+}
+
+export interface GitConfig {
+  name?: string;
+  email?: string;
+  token?: string;
+  repo_name?: string;
+  remote?: string;
+  reports_dir?: string;
 }

@@ -1,6 +1,13 @@
-url: http://localhost:8085/v1/graphql
+url: https://localhost:8080/v1/graphql
 headers:
   X-Hasura-Admin-Secret: my-secret
+git:
+  name: soorajshankar
+  email: soorajshankar@gmail.com
+  token: <token>
+  remote: https://soorajshankar:<token>@github.com/soorajshankar/auto-test.git
+  repo_name: auto-test
+  reports_dir: stage
 queries:
   - name: SearchAlbumsWithArtist
     tools: [k6, wrk2, autocannon]
@@ -18,30 +25,3 @@ queries:
           }
         }
       }
-  # - name: AlbumByPK
-  #   tools: [autocannon, k6]
-  #   execution_strategy: FIXED_REQUEST_NUMBER
-  #   requests: 10000
-  #   query: |
-  #     query AlbumByPK {
-  #       albums_by_pk(id: 1) {
-  #         id
-  #         title
-  #       }
-  #     }
-  # - name: AlbumByPKMultiStage
-  #   tools: [k6]
-  #   execution_strategy: MULTI_STAGE
-  #   initial_rps: 0
-  #   stages:
-  #     - duration: 5s
-  #       target: 100
-  #     - duration: 5s
-  #       target: 1000
-  #   query: |
-  #     query AlbumByPK {
-  #       albums_by_pk(id: 1) {
-  #         id
-  #         title
-  #       }
-  #     }
