@@ -46,11 +46,11 @@ export default class Query extends Command {
 
   async run() {
     const { flags } = this.parse(Query)
-    const config = (flags.config as unknown) as GlobalConfig
     if (typeof flags.config === 'string' && isHttpUrl(flags.config)) {
       let response = await promisifiedRequest(flags.config)
       flags.config = yaml.load(response)
     }
+    const config = (flags.config as unknown) as GlobalConfig
 
     // Oclif, can't figure out how to generically type flags =/
     const executor = new BenchmarkRunner(
@@ -72,12 +72,14 @@ export default class Query extends Command {
     let git: GitConfig = config.git || {}
     const { name, email, token, repo_name,remote,reports_dir="reports" } = git
     // console.log(JSON.stringify({ name, email, token, repo_name }))
+    const testId = reports_dir + "_" + Date.now();
 
+    shell.exec('echo "Repository Clone: Started" ')
     shell.exec('git clone ' + remote)
     shell.exec(
-      `pwd \
-      && ls \
+      `echo "Repository clone: Completed" \
       && cp -R ./queries/reports ${repo_name}/${reports_dir} \
+      && echo "Publishing reports" \
       && cd auto-test \
       && git config user.name ${name} \
       && git config user.email ${email} \
@@ -86,11 +88,11 @@ export default class Query extends Command {
       && git remote -v \
       && git status \
       && git add . \
-      && git commit -am "New Test" \
+      && git commit -am "Reports_"${testId} \
       && git status \
       && git push  \
       && git status \
-      && echo ">>>" `
+      && echo "Reports published successfully" `
     )
   }
 }
