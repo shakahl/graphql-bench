@@ -22,12 +22,14 @@ RUN apk add --update alpine-sdk libgcc openssl-dev zlib-dev \
 
 ENV LUA_PATH="/home/node/app/queries/bin/wrk/?.lua;;"
 WORKDIR /home/node/app
+RUN adduser node root
   
 COPY --from=loadimpact/k6:0.27.0 /usr/bin/k6 ${k6_binary_path}
 COPY --from=wrk-builder ${wrk_binary_path} ${wrk_binary_path}
 COPY --chown=node:node . .
 RUN yarn install
-RUN chown -R node:node .
+RUN chmod -R 775 .
+RUN chown -R node:root .
 
 USER node
 
