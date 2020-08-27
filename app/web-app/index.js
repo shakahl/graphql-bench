@@ -94,6 +94,37 @@ const Main = {
   `,
   setup() {
     let benchData = ref([])
+    const getParams = function (url) {
+      try{
+        var params = {}
+        var parser = document.createElement('a')
+        parser.href = url
+        var query = parser.search.substring(1)
+        var vars = query.split('&')
+        vars.forEach((item, i) => {
+          var pair = vars[i].split("=")
+          params[pair[0]] = decodeURIComponent(pair[1])
+        })
+        return params
+      }catch(err){
+        return
+      }
+    }
+    onMounted(async () => {
+      // Get parameters from the current URL
+      const params = getParams(window.location.href)
+      const src = params.src
+      if (src && src.length) {
+        let response = await fetch(src)
+        if (response.ok) {
+          // if HTTP-status is 200-299
+          // get the response body (the method explained below)
+          benchData.value = await response.json()
+        } else {
+          alert('Loading source failed-Error: ' + response.status)
+        }
+      }
+    })
 
     const handleFileUpload = async (event) => {
       const file = event.target.files[0]
