@@ -51,7 +51,7 @@ export default class Query extends Command {
       flags.config = yaml.load(response)
     }
     const config = (flags.config as unknown) as GlobalConfig
-    let pathToOutfile;
+    let pathToOutfile
 
     // Oclif, can't figure out how to generically type flags =/
     const executor = new BenchmarkRunner(
@@ -60,7 +60,7 @@ export default class Query extends Command {
     const results = await executor.runBenchmarks()
 
     if (flags.outfile) {
-       pathToOutfile = path.join(process.cwd(), flags.outfile)
+      pathToOutfile = path.join(process.cwd(), flags.outfile)
       fs.outputJSONSync(pathToOutfile, results, {
         spaces: 2,
       })
@@ -71,19 +71,28 @@ export default class Query extends Command {
       shell.exit(1)
     }
     let git: GitConfig = config.git || {}
-    const { name, email, token, repo_name,remote,reports_dir="reports" } = git
+    const {
+      name,
+      email,
+      token,
+      repo_name,
+      remote,
+      reports_dir = 'reports',
+    } = git
     // console.log(JSON.stringify({ name, email, token, repo_name }))
-    const testId = new Date().toISOString() + "_" + reports_dir ;
+    const testId = new Date().toISOString() + '_' + reports_dir
 
     shell.exec('echo "Repository Clone: Started" ')
     shell.exec('git clone ' + remote)
     if (pathToOutfile)
       shell.exec(
         `cp ${pathToOutfile} ./${repo_name}/${reports_dir}/${testId}_HasuraBenchmark.json`
-      );
+      )
     shell.exec(
       `echo "Repository clone: Completed" \
       && cp -R ./queries/reports ${repo_name}/${reports_dir} \
+      && cp -R ./web-app/* ./${repo_name} \
+      && node ./cli/src/commands/walk ${repo_name}\
       && echo "Publishing reports" \
       && cd ${repo_name} \
       && git config user.name ${name} \

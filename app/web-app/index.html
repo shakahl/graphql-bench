@@ -3,31 +3,133 @@
   <head>
     <title>GraphQL Bench Report</title>
     <meta charset="UTF-8" />
-    <script src="https://unpkg.com/vue@next"></script>
     <!-- jQuery only used for tooltips on hover for charts, could reasonably be removed -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <!-- D3 v4 required for MetricsGraphics.js charts -->
-    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-    <!-- Chart.js required for latency percentiles line chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.1.6"></script>
-    <!-- MetricsGraphics required for scatterplot and grouped bar-charts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/3.0-alpha3/metricsgraphics.js"></script>
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/3.0-alpha3/metricsgraphics.min.css"
-    />
     <link
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
       rel="stylesheet"
     />
   </head>
-
+  <script>
+    function myFunction() {
+      var input, filter, ul, li, a, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      ul = document.getElementById("myList");
+      li = ul.getElementsByTagName("li");
+      for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          li[i].style.display = "";
+        } else {
+          li[i].style.display = "none";
+        }
+      }
+    }
+    function makeList(list) {
+      list.forEach((i) => {
+        var x = document.createElement("LI");
+        x.innerHTML = `<a href="viewer?src=${i.url}">${i.url}</a>`;
+        document.getElementById("myList").appendChild(x);
+      });
+    }
+    async function loadData() {
+      let response = await fetch("index.json");
+      if (response.ok) {
+        // if HTTP-status is 200-299
+        // get the response body (the method explained below)
+        let json = await response.json();
+        console.log(json);
+        makeList(json);
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+    }
+    loadData();
+  </script>
   <body class="font-sans leading-normal tracking-normal bg-gray-400">
-    <div id="app"></div>
-    <script src="./index.js"></script>
+    <div id="app">
+      <nav
+        class="fixed top-0 z-10 flex flex-wrap items-center justify-between w-full p-6 bg-gray-800 shadow-xl"
+      >
+        <div class="flex items-center flex-shrink-0 mr-6 text-white">
+          <a
+            class="text-white no-underline hover:text-white hover:no-underline"
+            href="https://hasura.io"
+          >
+            <img
+              src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA2IiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTA2IDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNDUuNDgxMSAyMi41MTE1SDQzLjUzNDhDNDMuMjQxMSAyMi41MTE1IDQzLjAwNzIgMjIuMjc3NSA0My4wMDcyIDIxLjk4MzhWMTUuODUxNEM0My4wMDcyIDE1LjU1NzcgNDIuNzczMiAxNS4zMjM3IDQyLjQ3OTUgMTUuMzIzN0g0MC43NjcyQzQwLjQ3MzUgMTUuMzIzNyA0MC4yMzk2IDE1LjU1NzcgNDAuMjM5NiAxNS44NTE0VjMxLjQyNjRDNDAuMjM5NiAzMS43MjAxIDQwLjQ3MzUgMzEuOTU0MSA0MC43NjcyIDMxLjk1NDFINDIuNDc5NUM0Mi43NzMyIDMxLjk1NDEgNDMuMDA3MiAzMS43MjAxIDQzLjAwNzIgMzEuNDI2NFYyNS4zNjg2QzQzLjAwNzIgMjUuMDc1IDQzLjI0MTEgMjQuODQxIDQzLjUzNDggMjQuODQxSDQ1LjQ4MTFDNDUuNzc0NyAyNC44NDEgNDYuMDA4NyAyNS4wNzUgNDYuMDA4NyAyNS4zNjg2VjMxLjQyNjRDNDYuMDA4NyAzMS43MjAxIDQ2LjI0MjYgMzEuOTU0MSA0Ni41MzYzIDMxLjk1NDFINDguMjQ4NkM0OC41NDIzIDMxLjk1NDEgNDguNzc2MyAzMS43MjAxIDQ4Ljc3NjMgMzEuNDI2NFYxNS44NTE0QzQ4Ljc3NjMgMTUuNTU3NyA0OC41NDIzIDE1LjMyMzcgNDguMjQ4NiAxNS4zMjM3SDQ2LjUzNjNDNDYuMjQyNiAxNS4zMjM3IDQ2LjAwODcgMTUuNTU3NyA0Ni4wMDg3IDE1Ljg1MTRWMjEuOTgzOEM0Ni4wMDg3IDIyLjI3NzUgNDUuNzY5OCAyMi41MTE1IDQ1LjQ4MTEgMjIuNTExNVoiIGZpbGw9IiNGOEY4RjgiLz4KPHBhdGggZD0iTTU0LjExMjMgMTUuNzU2NUw1MS4zNDk3IDMxLjMzMTZDNTEuMjkgMzEuNjU1MiA1MS41Mzg5IDMxLjk1MzggNTEuODY3NCAzMS45NTM4SDUzLjU2NDhDNTMuODIzNiAzMS45NTM4IDU0LjA0NzYgMzEuNzY0NyA1NC4wODc0IDMxLjUxMDhMNTQuNTQwNCAyOC42NTM2QzU0LjU4MDIgMjguMzk0OCA1NC44MDQyIDI4LjIxMDYgNTUuMDYzMSAyOC4yMTA2SDU3LjIwODRDNTcuNDY3MyAyOC4yMTA2IDU3LjY4NjMgMjguMzk0OCA1Ny43MzExIDI4LjY0ODdMNTguMjIzOSAzMS41MjA4QzU4LjI2ODcgMzEuNzc0NiA1OC40ODc3IDMxLjk1ODggNTguNzQ2NSAzMS45NTg4SDYwLjQ2ODhDNjAuODAyMyAzMS45NTg4IDYxLjA1MTIgMzEuNjU1MiA2MC45ODY1IDMxLjMzMTZMNTguMDI0OCAxNS43NTY1QzU3Ljk3NSAxNS41MDc3IDU3Ljc2MSAxNS4zMjg1IDU3LjUwNzEgMTUuMzI4NUg1NC42MzVDNTQuMzc2MiAxNS4zMjM1IDU0LjE1NzEgMTUuNTA3NyA1NC4xMTIzIDE1Ljc1NjVaTTU2LjY0MSAyNS44NzYxSDU1LjU4NTdDNTUuMjYyMiAyNS44NzYxIDU1LjAxMzMgMjUuNTg3NCA1NS4wNjMxIDI1LjI2MzlMNTUuNTY1OCAxOS41NDk1QzU1LjY2MDQgMTguOTU3MiA1Ni41MDY2IDE4Ljk1MjIgNTYuNjA2MSAxOS41Mzk2TDU3LjE1ODcgMjUuMjUzOUM1Ny4yMTg0IDI1LjU3NzUgNTYuOTY5NSAyNS44NzYxIDU2LjY0MSAyNS44NzYxWiIgZmlsbD0iI0Y4RjhGOCIvPgo8cGF0aCBkPSJNNjguNDQzIDIyLjMwNzNINjYuNTU2NUM2Ni4xOTMxIDIyLjMwNzMgNjUuOTk5IDIyLjEzOCA2NS45OTkgMjEuNzc5NlYxOC4xODU4QzY1Ljk5OSAxNy44Mjc0IDY2LjE5MzEgMTcuNjU4MiA2Ni41NTY1IDE3LjY1ODJINjcuNjQxNkM2OC4wMDUgMTcuNjU4MiA2OC4xOTkxIDE3LjgyNzQgNjguMTk5MSAxOC4xODU4VjE5Ljg5MzFDNjguMTk5MSAyMC4xODY4IDY4LjQzMyAyMC40MjA4IDY4LjcyNjcgMjAuNDIwOEg3MC40NjM5QzcwLjc1NzYgMjAuNDIwOCA3MC45OTE2IDIwLjE4NjggNzAuOTkxNiAxOS44OTMxVjE3LjgyMjRDNzAuOTkxNiAxNi4xODk3IDcwLjA4NTYgMTUuMzI4NiA2OC4zNjgzIDE1LjMyODZINjUuODM0N0M2NC4xMTc0IDE1LjMyODYgNjMuMjExNSAxNi4xODk3IDYzLjIxMTUgMTcuODIyNFYyMi4wODgzQzYzLjIxMTUgMjMuNzM1OSA2NC4xMDI1IDI0LjYxMTkgNjUuNzg0OSAyNC42MTE5SDY3LjY5NjRDNjguMDU5NyAyNC42MTE5IDY4LjIyNCAyNC43NzEyIDY4LjIyNCAyNS4xMzk2VjI5LjA5NjhDNjguMjI0IDI5LjQ2NTEgNjguMDU5NyAyOS42Mjk0IDY3LjY5NjQgMjkuNjI5NEg2Ni42MTEyQzY2LjI0NzkgMjkuNjI5NCA2Ni4wNTM3IDI5LjQ2MDIgNjYuMDUzNyAyOS4wOTY4VjI3LjM4OTVDNjYuMDUzNyAyNy4wOTU4IDY1LjgxOTggMjYuODYxOCA2NS41MjYxIDI2Ljg2MThINjMuNzg4OUM2My40OTUyIDI2Ljg2MTggNjMuMjYxMyAyNy4wOTU4IDYzLjI2MTMgMjcuMzg5NVYyOS40NjAyQzYzLjI2MTMgMzEuMDkyOCA2NC4xNjcyIDMxLjk1NCA2NS44ODQ1IDMxLjk1NEg2OC4zOTMyQzcwLjEyNTQgMzEuOTU0IDcxLjA0NjMgMzEuMDkyOCA3MS4wNDYzIDI5LjQ2MDJWMjQuODA2MUM3MS4wNDEzIDIzLjE2ODQgNzAuMTQ1NCAyMi4zMDczIDY4LjQ0MyAyMi4zMDczWiIgZmlsbD0iI0Y4RjhGOCIvPgo8cGF0aCBkPSJNNzguOTE2IDI5LjA5NjZDNzguOTE2IDI5LjQ2NSA3OC43NTY3IDI5LjYyOTMgNzguMzU4NSAyOS42MjkzSDc2Ljg4NTFDNzYuNTIxNyAyOS42MjkzIDc2LjMyNzYgMjkuNDYgNzYuMzI3NiAyOS4wOTY2VjE1Ljg1MTFDNzYuMzI3NiAxNS41NTc0IDc2LjA5MzcgMTUuMzIzNSA3NS44IDE1LjMyMzVINzQuMDYyOEM3My43NjkxIDE1LjMyMzUgNzMuNTM1MiAxNS41NTc0IDczLjUzNTIgMTUuODUxMVYyOS40NTVDNzMuNTM1MiAzMS4wODc3IDc0LjQ1MSAzMS45NDg4IDc2LjE4ODIgMzEuOTQ4OEg3OS4wNjA0QzgwLjc5MjYgMzEuOTQ4OCA4MS43MTM0IDMxLjA4NzcgODEuNzEzNCAyOS40NTVWMTUuODUxMUM4MS43MTM0IDE1LjU1NzQgODEuNDc5NSAxNS4zMjM1IDgxLjE4NTggMTUuMzIzNUg3OS40NDg2Qzc5LjE1NDkgMTUuMzIzNSA3OC45MjEgMTUuNTU3NCA3OC45MjEgMTUuODUxMVYyOS4wOTY2SDc4LjkxNloiIGZpbGw9IiNGOEY4RjgiLz4KPHBhdGggZD0iTTkyLjczNCAyMi44ODk1VjE3LjgxNzNDOTIuNzM0IDE2LjE4NDYgOTEuODI4IDE1LjMyMzUgOTAuMTEwNyAxNS4zMjM1SDg1LjExODFDODQuODI0NSAxNS4zMjM1IDg0LjU5MDUgMTUuNTU3NCA4NC41OTA1IDE1Ljg1MTFWMzEuNDI2MkM4NC41OTA1IDMxLjcxOTkgODQuODI0NSAzMS45NTM4IDg1LjExODEgMzEuOTUzOEg4Ni44MzA1Qzg3LjEyNDEgMzEuOTUzOCA4Ny4zNTgxIDMxLjcxOTkgODcuMzU4MSAzMS40MjYyVjI1LjkzNThDODcuMzU4MSAyNS42NDIyIDg3LjU5MiAyNS40MDgyIDg3Ljg4NTcgMjUuNDA4MkM4OC4xMDQ3IDI1LjQwODIgODguMzAzOCAyNS41NDc2IDg4LjM3ODUgMjUuNzUxN0w5MC41NTM3IDMxLjYwNTRDOTAuNjI4NCAzMS44MTQ0IDkwLjgyNzUgMzEuOTQ4OCA5MS4wNDY1IDMxLjk0ODhIOTIuODg4M0M5My4yNjE2IDMxLjk0ODggOTMuNTE1NCAzMS41NzU1IDkzLjM4MSAzMS4yMzIxTDkxLjI3MDUgMjUuNzk2NUM5MS4xNjYgMjUuNTMyNiA5MS4zMDA0IDI1LjI0ODkgOTEuNTU0MiAyNS4xMTk1QzkyLjMzMDggMjQuNzQ2MiA5Mi43MzQgMjMuOTg0NiA5Mi43MzQgMjIuODg5NVpNODkuOTY2NCAxOC4xODA3VjIyLjU3NTlDODkuOTY2NCAyMi45MzQzIDg5Ljc3MjIgMjMuMTAzNiA4OS40MDg5IDIzLjEwMzZIODcuODgwN0M4Ny41ODcxIDIzLjEwMzYgODcuMzUzMSAyMi44Njk2IDg3LjM1MzEgMjIuNTc1OVYxOC4xNzU3Qzg3LjM1MzEgMTcuODgyIDg3LjU4NzEgMTcuNjQ4IDg3Ljg4MDcgMTcuNjQ4SDg5LjQwODlDODkuNzcyMiAxNy42NDggODkuOTY2NCAxNy44MjIzIDg5Ljk2NjQgMTguMTgwN1oiIGZpbGw9IiNGOEY4RjgiLz4KPHBhdGggZD0iTTEwMS44OTggMTUuMzIzNUg5OS4wMjU3Qzk4Ljc3MTggMTUuMzIzNSA5OC41NTI4IDE1LjUwNzcgOTguNTA4IDE1Ljc2MTVMOTUuNzQ1NCAzMS4zMzY2Qzk1LjY4NTcgMzEuNjYwMSA5NS45MzQ2IDMxLjk1ODggOTYuMjYzMSAzMS45NTg4SDk3Ljk2MDVDOTguMjE5MyAzMS45NTg4IDk4LjQ0MzMgMzEuNzY5NiA5OC40ODMxIDMxLjUxNThMOTguOTM2MSAyOC42NTg2Qzk4Ljk3NTkgMjguMzk5OCA5OS4xOTk5IDI4LjIxNTYgOTkuNDU4OCAyOC4yMTU2SDEwMS42MDRDMTAxLjg2MyAyOC4yMTU2IDEwMi4wODIgMjguMzk5OCAxMDIuMTI3IDI4LjY1MzZMMTAyLjYyIDMxLjUyNTdDMTAyLjY2NCAzMS43Nzk2IDEwMi44ODMgMzEuOTYzOCAxMDMuMTQyIDMxLjk2MzhIMTA0Ljg2NEMxMDUuMTk4IDMxLjk2MzggMTA1LjQ0NyAzMS42NjAxIDEwNS4zODIgMzEuMzM2NkwxMDIuNDIgMTUuNzYxNUMxMDIuMzY2IDE1LjUwMjcgMTAyLjE1MiAxNS4zMjM1IDEwMS44OTggMTUuMzIzNVpNMTAxLjAzMiAyNS44NzYxSDk5Ljk3NjRDOTkuNjUyOSAyNS44NzYxIDk5LjQwNCAyNS41ODc0IDk5LjQ1MzggMjUuMjYzOUw5OS45NTY1IDIwLjA1MjNDMTAwLjA1MSAxOS40NTk5IDEwMC44OTcgMTkuNDU0OSAxMDAuOTk3IDIwLjA0MjNMMTAxLjU0OSAyNS4yNTM5QzEwMS42MDkgMjUuNTc3NCAxMDEuMzYgMjUuODc2MSAxMDEuMDMyIDI1Ljg3NjFaIiBmaWxsPSIjRjhGOEY4Ii8+CjxwYXRoIGQ9Ik0zMy4xNzU2IDEzLjc5NjNDMzQuMjc1OSAxMS4xMzA3IDM0LjMwNSA1LjY3MDcxIDMyLjgzOTMgMS40MzE0NkMzMi40NjE1IDAuNjcxNjM3IDMxLjMxOTcgMC45MDQxNTMgMzEuMjY1NyAxLjc1MTE3TDMxLjI0OTEgMi4wMzM1MUMzMC45OTE2IDYuMDE1MzQgMjkuNTI2IDguMjE1OTMgMjcuMzY2OSA5LjI3MDU1QzI3LjAxNCA5LjQ0NDkzIDI2LjQ0NTIgOS4zOTkyNiAyNi4xMDg4IDkuMTg3NTFDMjMuNTM0NiA3LjU2NDA1IDIwLjQ4NjkgNi42MjU2OSAxNy4yMTkzIDYuNjI1NjlDMTMuOTQzMyA2LjYyNTY5IDEwLjg5MTUgNy41NjgyIDguMzEzMTIgOS4xOTk5NkM3Ljk4NTExIDkuNDA3NTcgNy41NzQwNSA5LjQ1NzM5IDcuMjA4NjcgOS4zMjAzN0M0Ljk5OTc4IDguNDk0MTEgMy40NTUyMSA2LjEwMjUzIDMuMTkzNjMgMi4wMzc2NkwzLjE3NzAyIDEuNzUxMTdDMy4xMjMwNSAwLjkwNDE1MyAxLjk4MTIzIDAuNjcxNjM3IDEuNjAzMzkgMS40MzE0NkMwLjEzNzcxOCA1LjY3OTAyIDAuMTY2NzgyIDExLjE0NzMgMS4yNzEyMyAxMy44MDg3QzEuODIzNDUgMTUuMTQxNiAxLjg1MjUyIDE2LjY0MDUgMS4zOTE2NCAxOC4wMTA2QzAuODA2MTk5IDE5Ljc1NDUgMC41MDMwOTkgMjEuNjMxMiAwLjUzMjE2NCAyMy41Nzg1QzAuNjczMzM0IDMyLjM4OTIgOC4xODQ0IDM5Ljg3OTUgMTYuOTk1MSAzOS45OTU4QzI2LjMxNjQgNDAuMTIwMyAzMy45MTA1IDMyLjYwMSAzMy45MTA1IDIzLjMwODdDMzMuOTEwNSAyMS40NTI3IDMzLjYwNzQgMTkuNjY3MyAzMy4wNDY5IDE3Ljk5ODJDMzIuNTg2IDE2LjYzMjEgMzIuNjI3NiAxNS4xMzMzIDMzLjE3NTYgMTMuNzk2M1pNMTYuOTc4NSAzNi4wMDE1QzEwLjE4OTggMzUuODc2OSA0LjY1NTE2IDMwLjMzODEgNC41MjY0NCAyMy41NDk1QzQuMzkzNTggMTYuMzQ5OCAxMC4yNTYzIDEwLjQ4MjkgMTcuNDYwMSAxMC42MTU4QzI0LjI0ODcgMTAuNzQwNCAyOS43ODM0IDE2LjI3OTIgMjkuOTEyMSAyMy4wNjc4QzMwLjA0NSAzMC4yNjc1IDI0LjE4MjMgMzYuMTM0NCAxNi45Nzg1IDM2LjAwMTVaIiBmaWxsPSIjRjhGOEY4Ii8+CjxwYXRoIGQ9Ik0xOS4xODMyIDIxLjk0N0wxNi4yMTAzIDE3LjMyNThDMTUuNzMyOCAxNi41Nzg0IDE0LjczMjIgMTYuMzYyNSAxMy45ODkgMTYuODQ0MUMxMy41MjM5IDE3LjE0MzEgMTMuMjQ1OCAxNy42NDk2IDEzLjI0OTkgMTguMjMwOUMxMy4yNDk5IDE4LjUzODIgMTMuMzYyIDE4Ljg0MTMgMTMuNTI4MSAxOS4wOTg3TDE1LjU1ODUgMjIuMjU4NEMxNS43MDc5IDIyLjQ5MDkgMTUuNjgzIDIyLjc5NCAxNS40OTYyIDIyLjk5NzVMMTIuMzU3MiAyNi40NTYxQzExLjc2MzUgMjcuMTEyMiAxMS44MDkxIDI4LjEyOTQgMTIuNDY5MyAyOC43MjczQzEyLjc3MjQgMjkuMDAxMyAxMy4xNjY5IDI5LjE1MDggMTMuNTc3OSAyOS4xNDI1QzE0LjAxOCAyOS4xMzQyIDE0LjQ0MTYgMjguOTQzMiAxNC43NDA1IDI4LjYxNTJMMTcuMDY1NyAyNS44NzlDMTcuMjQ0MiAyNS42NjcyIDE3LjU3MjIgMjUuNjgzOCAxNy43MyAyNS45MTIyTDE5LjM3ODMgMjguMjg3MkMxOS40OTQ2IDI4LjQ2OTkgMTkuNjM5OSAyOC42NDAxIDE5LjgxODUgMjguNzY0N0MyMC4zODczIDI5LjE2NzQgMjEuMDg5IDI5LjE1NSAyMS42MTYzIDI4LjgyMjhDMjIuMDg1NSAyOC41MjggMjIuMzY3OCAyOC4wMjE1IDIyLjM2NzggMjcuNDQ0M0MyMi4zNjc4IDI3LjEzNzEgMjIuMjY0IDI2LjgzNCAyMi4wOTc5IDI2LjU3MjRMMTkuMTgzMiAyMS45NDdaIiBmaWxsPSIjRjhGOEY4Ii8+Cjwvc3ZnPgo="
+              alt="Logo"
+            />
+          </a>
+        </div>
+
+        <div class="block lg:hidden">
+          <button
+            id="nav-toggle"
+            class="flex items-center px-3 py-2 text-gray-500 border border-gray-600 rounded hover:text-white hover:border-white"
+          >
+            <svg
+              class="w-3 h-3 fill-current"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <title>Menu</title>
+              <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div
+          class="flex-grow hidden w-full pt-6 lg:flex lg:items-center lg:w-auto lg:block lg:pt-0"
+          id="nav-content"
+        >
+          <ul class="items-center justify-end flex-1 list-reset lg:flex">
+            <li class="mr-3">
+              <a
+                class="inline-block px-4 py-2 text-white text-lg no-underline"
+                href="#"
+                >GraphQL Bench Report</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="container mx-auto mt-24 bg-white shadow-lg md:mt-18"></div>
+
+    <div class="container m-auto">
+      <div class="flex-1 pr-4">
+        <div class="relative">
+          <input
+            type="search"
+            class="w-full py-2 pl-10 pr-4 font-medium text-gray-600 rounded-lg shadow focus:outline-none focus:shadow-outline"
+            placeholder="Search..."
+            onkeyup="myFunction()"
+            id="myInput"
+          />
+          <div class="absolute top-0 left-0 inline-flex items-center p-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6 text-gray-400"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
+              <circle cx="10" cy="10" r="7" />
+              <line x1="21" y1="21" x2="15" y2="15" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <ul id="myList"></ul>
+    </div>
   </body>
 
   <style>
