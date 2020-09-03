@@ -72,12 +72,12 @@ export default class Query extends Command {
     }
     let git: GitConfig = config.git || {}
     const {
-      name,
-      email,
-      token,
-      repo_name,
-      remote,
-      reports_dir = 'reports',
+      name = process.env.GIT_NAME,
+      email = process.env.GIT_EMAIL,
+      token = process.env.GIT_TOKEN,
+      repo_name = process.env.GIT_REPO_NAME,
+      remote = process.env.GIT_REMOTE,
+      reports_dir = process.env.GIT_REPORTS_DIR || 'reports',
     } = git
     // console.log(JSON.stringify({ name, email, token, repo_name }))
     const testId = new Date().toISOString() + '_' + reports_dir
@@ -92,7 +92,7 @@ export default class Query extends Command {
       `echo "Repository clone: Completed" \
       && cp -R ./queries/reports ${repo_name}/${reports_dir} \
       && cp -R ./web-app/* ./${repo_name} \
-      && node ./cli/src/commands/walk ${repo_name}\
+      && node ./cli/src/commands/indexData ${repo_name} \
       && echo "Publishing reports" \
       && cd ${repo_name} \
       && git config user.name ${name} \

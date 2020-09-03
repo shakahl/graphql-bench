@@ -34,7 +34,7 @@ var walk = function (dir, done) {
 
 walk('./', function (err, results) {
   if (err) throw err
-  console.log(results)
+  // console.log(results)
   var args = process.argv.slice(2)
   fs.outputJSONSync(`./${args[0]}/index.json`, results, {
     spaces: 2,
