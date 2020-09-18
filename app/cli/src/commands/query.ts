@@ -88,7 +88,7 @@ export default class Query extends Command {
       shell.exec(
         `cp ${pathToOutfile} ./${repo_name}/${reports_dir}/${testId}_HasuraBenchmark.json`
       )
-    shell.exec(
+    if (shell.exec(
       `echo "Repository clone: Completed" \
       && cp -R ./queries/reports ${repo_name}/${reports_dir} \
       && cp -R ./web-app/* ./${repo_name} \
@@ -99,7 +99,6 @@ export default class Query extends Command {
       && git config user.email ${email} \
       && git config user.password ${token} \
       && git remote set-url origin ${remote} \
-      && git remote -v \
       && git status \
       && git add . \
       && git commit -am "Reports_"${testId} \
@@ -107,6 +106,10 @@ export default class Query extends Command {
       && git push  \
       && git status \
       && echo "Reports published successfully" `
-    )
+    ).code !== 0) {
+      shell.echo("Something went wrong, unable to publish the report")
+      shell.echo("Fallback : Printing reports on console")
+      return shell.echo(JSON.stringify(results, null, 2))
+    }
   }
 }
