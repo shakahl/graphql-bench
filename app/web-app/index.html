@@ -27,10 +27,17 @@
         }
       }
     }
+    function getDisplayText(str) {
+      if(str.length<2) return str;
+      return str.substring(2, str.length-5).replaceAll("/"," - ")
+    }
     function makeList(list) {
       list.forEach((i) => {
         var x = document.createElement("LI");
-        x.innerHTML = `<a href="viewer?src=${i.url}">${i.url}</a>`;
+        x.className = "p-2 hover:bg-blue-200 rounded cursor-pointer";
+        x.innerHTML = `<a href="viewer?src=${i.url}">${getDisplayText(
+          i.url
+        )}</a>`;
         document.getElementById("myList").appendChild(x);
       });
     }
