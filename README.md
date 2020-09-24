@@ -121,3 +121,25 @@ Inside of the `autocannon` directory, you should see several HTML files with que
 Clicking on `k6` will take you to the generated plot from the aggregate query data:
 
 ![](readme_images/k6s-report.png)
+
+
+## Run once as docker container
+
+To run the benchmarking suite once as a docker image, you can build and run the image as follows.
+
+```sh
+cd app && docker-compose up --build --force-recreate && docker run \
+-e GIT_TOKEN=<CHANGEMEtoken> \
+-e GIT_EMAIL=user@example.com \
+-e GIT_REMOTE=https://<user>:<tokenCHANGEME>@github.com/<user>/<repo_name>.git \
+-e GIT_REPO_NAME=auto-test \
+-e GIT_REPORTS_DIR=stage12 \
+-e GIT_NAME=soorajshankar \
+-it app_graphql-bench query \
+--config https://gist.githubusercontent.com/<CHANGE MEyour gitst url>/config.yaml #test configuration file url \
+-o reports.json
+```
+
+1. Replace the configuration with the git configurataion, this is responsible of pubishing the reports on to the git repository, (any invalid configuration will fail the auto-publishing and as a fallback mechanism, reports will be printed on the container console output)
+
+2. the test configuration file url provided will be used to source the test suites, and to define the benchmarking configuration  

@@ -1,0 +1,27 @@
+url: https://localhost:8080/v1/graphql
+headers:
+  X-Hasura-Admin-Secret: my-secret
+git:
+  name: soorajshankar
+  email: soorajshankar@gmail.com
+  token: <token>
+  remote: https://soorajshankar:<token>@github.com/soorajshankar/auto-test.git
+  repo_name: auto-test
+  reports_dir: stage
+queries:
+  - name: SearchAlbumsWithArtist
+    tools: [k6, wrk2, autocannon]
+    execution_strategy: REQUESTS_PER_SECOND
+    rps: 500
+    duration: 5s
+    query: |
+      query SearchAlbumsWithArtist {
+        albums(where: {title: {_like: "%Rock%"}}) {
+          id
+          title
+          artist {
+            name
+            id
+          }
+        }
+      }
