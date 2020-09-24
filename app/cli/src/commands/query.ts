@@ -61,10 +61,13 @@ export default class Query extends Command {
 
     if (flags.outfile) {
       pathToOutfile = path.join(process.cwd(), flags.outfile)
-      fs.outputJSONSync(pathToOutfile, results, {
-        spaces: 2,
-      })
     }
+
+    pathToOutfile = path.join(process.cwd(), "reports.json")
+    fs.outputJSONSync(pathToOutfile, results, {
+      spaces: 2,
+    })
+    
 
     if (!shell.which('git')) {
       shell.echo('Sorry, this script requires git')
@@ -76,13 +79,21 @@ export default class Query extends Command {
       email = process.env.GIT_EMAIL,
       token = process.env.GIT_TOKEN,
       repo_name = process.env.GIT_REPO_NAME,
+      branch = process.env.GIT_BRANCH,
       remote = process.env.GIT_REMOTE,
       reports_dir = process.env.GIT_REPORTS_DIR || 'reports',
     } = git
     // console.log(JSON.stringify({ name, email, token, repo_name }))
     const testId = new Date().toISOString() + '_' + reports_dir
 
-    shell.exec('echo "Repository Clone: Started" ')
+    shell.exec(`echo "Repository Clone: Started with branch: ${branch || 'gh-pages'}" `)
+    shell.exec(`echo "removing  ${repo_name}" `)
+    shell.exec(`rm -rf ${repo_name}`)
+
+    if (shell.exec(`git clone --single-branch --branch ${branch || 'gh-pages'} ${remote}`).code !== 0) {
+      shell.exec('git clone ' + remote) // if branch doesn't exist, use default branch
+    }
+
     shell.exec('git clone ' + remote)
     if (pathToOutfile)
       shell.exec(

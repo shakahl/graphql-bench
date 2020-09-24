@@ -179,5 +179,6 @@ export interface GitConfig {
   token?: string;
   repo_name?: string;
   remote?: string;
+  branch?: string;
   reports_dir?: string;
 }

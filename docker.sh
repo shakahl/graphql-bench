@@ -1,6 +1,7 @@
 cd app && docker-compose up --build --force-recreate && docker run \
 -e GIT_TOKEN=<CHANGEMEtoken> \
 -e GIT_EMAIL=soorajshankar@gmail.com \
+-e GIT_BRANCH=gh-pages \
 -e GIT_REMOTE=https://soorajshankar:<tokenCHANGEME>@github.com/soorajshankar/auto-test.git \
 -e GIT_REPO_NAME=auto-test \
 -e GIT_REPORTS_DIR=stage12 \
