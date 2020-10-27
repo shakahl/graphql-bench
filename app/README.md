@@ -12,7 +12,6 @@ Zero-dependency single file `index.html` + `index.js` web report dashboard that 
 
 https://dbx6f.csb.app/
 
-
 **Video Demo**:
 
 ![](./hasura-bench-report.gif)
@@ -22,6 +21,7 @@ https://dbx6f.csb.app/
 Added `/cli` app which just imports the exported benchmark and subscription methods and wraps them in global CLI interface using `@oclif` to handle the heavy lifting.
 
 Example:
+
 ```sh
 ❯ graphql-bench --help
 VERSION
@@ -52,7 +52,6 @@ EXAMPLE
   $ graphql-bench query --config ./config.query.yaml --outfile results.json
 ```
 
-
 ## Subscriptions
 
 Exactly the same. Only change will be that the command will become part of the master CLI located in `/cli` that query bench has already been integrated with, for a unified interface.
@@ -61,17 +60,17 @@ Exactly the same. Only change will be that the command will become part of the m
 
 - Added `wrk2` to tools, now supports `k6`, `autocannon` and `wrk2`
 - Instead of just a single benchmark mode of `req/s x duration`, there are 5 modes. See below for example config file with descriptions and example uses:
-  
+
 ```yaml
 url: 'http://localhost:8085/v1/graphql'
 headers:
   X-Hasura-Admin-Secret: my-secret
 queries:
-    # Name: Unique name for the query
+  # Name: Unique name for the query
   - name: SearchAlbumsWithArtist
     # Tools: List of benchmarking tools to run: ['autocannon', 'k6', 'wrk2']
     tools: [autocannon, k6, wrk2]
-    # Execution Strategy: the type of the benchmark to run. Options are: 
+    # Execution Strategy: the type of the benchmark to run. Options are:
     # REQUESTS_PER_SECOND: Fixed duration, fixed rps. Example parameters:
     #   duration: 10s
     #   rps: 500
@@ -131,3 +130,41 @@ queries:
       }
 ```
 
+> for random execution
+
+```yaml
+url: 'http://localhost:8085/v1/graphql'
+headers:
+  X-Hasura-Admin-Secret: my-secret
+queries:
+  # Name: Unique name for the query
+  - name: SearchAlbumsWithArtist
+    # Tools: List of benchmarking tools to run: ['autocannon', 'k6', 'wrk2']
+    tools: [k6]
+    execution_strategy: REQUESTS_PER_SECOND
+    rps: 2000
+    duration: 10s
+    connections: 50
+    # supported only with k6
+    queries:
+      - query: |
+          query SearchAlbumsWithArtist {
+            albums(where: {title: {_like: "%Rock%"}}) {
+              id
+              title
+              artist {
+                name
+                id
+              }
+            }
+          }
+      - query: |
+          query AlbumByPK {
+            albums_by_pk(id: 1) {
+              id
+              title
+            }
+          }
+        variables: |
+          {}
+```

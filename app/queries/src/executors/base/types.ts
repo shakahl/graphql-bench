@@ -57,7 +57,8 @@ interface _BenchmarkRunConfig {
   name: string
   tools: BenchmarkTool[]
   execution_strategy: ExecutionStrategy
-  query: string
+  queries: Record<string, any>
+  query?: string
   variables?: Record<string, any>
   connections?: number
 }
