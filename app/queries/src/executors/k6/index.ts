@@ -152,7 +152,8 @@ export class K6Executor extends BenchmarkExecutor {
   private _makeScenarioEnv(bench: Benchmark) {
     return {
       url: this.config.url,
-      query: bench.query,
+      ...(bench.query && { query: bench.query }),
+      ...(bench.queries && { queries: JSON.stringify(bench.queries) }),
       headers: JSON.stringify(this.config.headers),
       variables: JSON.stringify(bench.variables),
     }
